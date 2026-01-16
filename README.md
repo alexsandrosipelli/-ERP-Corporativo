@@ -18,7 +18,7 @@ Este sistema simula muitas funcionalidades de um ERP tradicional:
 - 📋 Logs de auditoria com filtros  
 - 💾 Exportação de dados (CSV/Excel)
 
-Todos os dados são gravados **no Local Storage do navegador**, oferecendo persistência entre sessões sem servidor. :contentReference[oaicite:10]{index=10}
+Todos os dados são gravados **no Local Storage do navegador**, oferecendo persistência entre sessões sem servidor.  
 
 ---
 
