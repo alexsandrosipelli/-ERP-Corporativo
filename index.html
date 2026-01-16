@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ERP Corporativo - Sistema Completo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h2><i class="fas fa-lock"></i> ERP Corporativo</h2>
+            <div class="role-selector">
+                <button type="button" class="role-btn active" data-role="admin">
+                    <i class="fas fa-user-shield"></i> Administrador
+                </button>
+                <button type="button" class="role-btn" data-role="vendedor">
+                    <i class="fas fa-user-tie"></i> Vendedor
+                </button>
+            </div>
+            <input type="text" id="loginUser" class="login-input" placeholder="Usuário" value="admin">
+            <input type="password" id="loginPass" class="login-input" placeholder="Senha" value="admin123">
+            <button type="button" class="btn-primary login-btn" onclick="login()">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <button type="button" class="btn-secondary" onclick="seedDatabaseCompleto()"
+                    style="width: 100%; padding: 10px;">
+                    <i class="fas fa-database"></i> Gerar Dados de Teste
+                </button>
+                <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">
+                    <strong>Admin:</strong> admin / admin123<br>
+                    <strong>Vendedor:</strong> vendedor / venda123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="hidden">
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-building"></i> ERP Corporativo</h1>
+                <span>Sistema de Gestão Comercial</span>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn-secondary" onclick="seedDatabaseCompleto()"
+                    style="margin-right: 15px;">
+                    <i class="fas fa-database"></i> Gerar Dados
+                </button>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div>
+                        <div id="userName">Administrador</div>
+                        <div id="userRole" style="font-size: 0.8rem; opacity: 0.9;">Administrador</div>
+                    </div>
+                    <button type="button" class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="sidebar">
+            <button type="button" class="nav-btn active" data-tab="dashboard">
+                <i class="fas fa-chart-bar"></i> Dashboard
+            </button>
+            <button type="button" class="nav-btn" data-tab="clientes">
+                <i class="fas fa-users"></i> Clientes
+            </button>
+            <button type="button" class="nav-btn" data-tab="vendedores">
+                <i class="fas fa-user-tie"></i> Vendedores
+            </button>
+            <button type="button" class="nav-btn" data-tab="produtos">
+                <i class="fas fa-box"></i> Produtos
+            </button>
+            <button type="button" class="nav-btn" data-tab="pedidos">
+                <i class="fas fa-file-invoice"></i> Pedidos
+            </button>
+            <button type="button" class="nav-btn" data-tab="relatorios">
+                <i class="fas fa-chart-line"></i> Relatórios
+            </button>
+            <button type="button" class="nav-btn" data-tab="logs">
+                <i class="fas fa-clipboard-list"></i> Logs
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="tab-content active">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Dashboard</h2>
+                    <div class="header-actions">
+                        <button type="button" class="btn-secondary" onclick="atualizarDashboard()">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <span><i class="fas fa-users"></i> Total de Clientes</span>
+                        <strong id="kpiClientes">0</strong>
+                    </div>
+                    <div class="kpi-card">
+                        <span><i class="fas fa-dollar-sign"></i> Total de Vendas</span>
+                        <strong id="kpiVendas">R$ 0,00</strong>
+                    </div>
+                    <div class="kpi-card">
+                        <span><i class="fas fa-shopping-cart"></i> Pedidos Ativos</span>
+                        <strong id="kpiPedidos">0</strong>
+                    </div>
+                    <div class="kpi-card">
+                        <span><i class="fas fa-box"></i> Produtos</span>
+                        <strong id="kpiProdutos">0</strong>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title"><i class="fas fa-chart-line"></i> Vendas por Mês</h3>
+                        <button type="button" class="btn-sm" onclick="renderChartVendasMes()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="chartVendasMes" class="chart">
+                        <div class="empty-state">
+                            <span>Nenhuma venda para exibir</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title"><i class="fas fa-trophy"></i> Top Vendedores</h3>
+                        <button type="button" class="btn-sm" onclick="renderChartTopVendedores()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="chartTopVendedores" class="chart">
+                        <div class="empty-state">
+                            <span>Nenhum vendedor com vendas</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CLIENTES -->
+            <section id="clientes" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Clientes</h2>
+                    <div class="header-actions">
+                        <div class="export-buttons">
+                            <button type="button" onclick="exportarClientes()" class="export-btn btn-sm">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </button>
+                            <button type="button" onclick="exportarClientesExcel()" class="export-btn btn-sm">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchCliente" placeholder="Buscar por nome..."
+                            onkeyup="buscarClientes()">
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3><i class="fas fa-plus-circle"></i> Novo Cliente</h3>
+                    <div class="form-row">
+                        <input type="text" id="clienteNome" placeholder="Nome do Cliente *" required>
+                        <input type="email" id="clienteEmail" placeholder="Email *" required>
+                        <input type="tel" id="clienteTelefone" placeholder="Telefone">
+                        <button type="button" onclick="addCliente()" class="btn-primary">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                    <small style="color: #666; margin-top: 5px; display: block;">* Campos obrigatórios</small>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination" id="paginationClientes">
+                    <button type="button" onclick="mudarPagina('clientes', -1)">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span class="pagination-info" id="pageInfoClientes">Página 1 de 1</span>
+                    <button type="button" onclick="mudarPagina('clientes', 1)">
+                        Próximo <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="listaClientes" class="list-grid">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando clientes...
+                    </div>
+                </div>
+            </section>
+
+            <!-- VENDEDORES -->
+            <section id="vendedores" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-tie"></i> Vendedores</h2>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchVendedor" placeholder="Buscar por nome..."
+                            onkeyup="buscarVendedores()">
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3><i class="fas fa-plus-circle"></i> Novo Vendedor</h3>
+                    <div class="form-row">
+                        <input type="text" id="vendedorNome" placeholder="Nome do Vendedor *" required>
+                        <input type="email" id="vendedorEmail" placeholder="Email">
+                        <input type="text" id="vendedorTelefone" placeholder="Telefone">
+                        <button type="button" onclick="addVendedor()" class="btn-primary">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                    <small style="color: #666; margin-top: 5px; display: block;">* Campos obrigatórios</small>
+                </div>
+
+                <div id="listaVendedores" class="list-grid">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando vendedores...
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUTOS -->
+            <section id="produtos" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-box"></i> Produtos</h2>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchProduto" placeholder="Buscar por nome..."
+                            onkeyup="buscarProdutos()">
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3><i class="fas fa-plus-circle"></i> Novo Produto</h3>
+                    <div class="form-row">
+                        <input type="text" id="produtoNome" placeholder="Nome do Produto *" required>
+                        <input type="number" id="produtoPreco" placeholder="Preço R$ *" step="0.01" required>
+                        <input type="number" id="produtoEstoque" placeholder="Estoque *" required>
+                        <select id="produtoCategoria">
+                            <option value="ELETRONICOS">Eletrônicos</option>
+                            <option value="INFORMATICA">Informática</option>
+                            <option value="ESCRITORIO">Escritório</option>
+                            <option value="MOVEIS">Móveis</option>
+                            <option value="OUTROS">Outros</option>
+                        </select>
+                        <button type="button" onclick="addProduto()" class="btn-primary">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                    <small style="color: #666; margin-top: 5px; display: block;">* Campos obrigatórios</small>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination" id="paginationProdutos">
+                    <button type="button" onclick="mudarPagina('produtos', -1)">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span class="pagination-info" id="pageInfoProdutos">Página 1 de 1</span>
+                    <button type="button" onclick="mudarPagina('produtos', 1)">
+                        Próximo <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="listaProdutos" class="list-grid">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                    </div>
+                </div>
+            </section>
+
+            <!-- PEDIDOS -->
+            <section id="pedidos" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-invoice"></i> Pedidos</h2>
+                    <div class="header-actions">
+                        <button type="button" onclick="exportarPedidos()" class="export-btn btn-sm">
+                            <i class="fas fa-file-csv"></i> Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> Data Inicial</label>
+                        <input type="date" id="filterDataInicio" onchange="filtrarPedidos()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> Data Final</label>
+                        <input type="date" id="filterDataFim" onchange="filtrarPedidos()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> Status</label>
+                        <select id="filterStatus" onchange="filtrarPedidos()">
+                            <option value="">Todos</option>
+                            <option value="ABERTO">Aberto</option>
+                            <option value="FECHADO">Fechado</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-sort"></i> Ordenar por</label>
+                        <select id="ordenarPedidos" onchange="ordenarPedidos()">
+                            <option value="data_desc">Data (Mais Recente)</option>
+                            <option value="data_asc">Data (Mais Antigo)</option>
+                            <option value="valor_desc">Valor (Maior)</option>
+                            <option value="valor_asc">Valor (Menor)</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="limparFiltrosPedidos()" class="btn-secondary btn-sm">
+                        <i class="fas fa-trash-alt"></i> Limpar Filtros
+                    </button>
+                </div>
+
+                <!-- NOVO PEDIDO -->
+                <div class="form-container">
+                    <h3><i class="fas fa-plus-circle"></i> Novo Pedido</h3>
+                    <div class="form-row">
+                        <select id="pedidoCliente">
+                            <option value="">Selecione Cliente *</option>
+                        </select>
+                        <select id="pedidoVendedor">
+                            <option value="">Selecione Vendedor *</option>
+                        </select>
+                        <select id="pedidoProduto">
+                            <option value="">Selecione Produto *</option>
+                        </select>
+                        <input type="number" id="pedidoQtd" placeholder="Quantidade *" min="1" value="1" required>
+                        <button type="button" onclick="addItemPedido()" class="btn-primary">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
+                    </div>
+                    <small style="color: #666; margin-top: 5px; display: block;">* Campos obrigatórios</small>
+
+                    <div id="itensPedidoTemp" class="list-grid mt-20">
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <span>Nenhum item adicionado</span>
+                        </div>
+                    </div>
+
+                    <div class="pedido-total">
+                        <strong><i class="fas fa-calculator"></i> Total: R$ <span id="totalPedido">0,00</span></strong>
+                        <button type="button" class="btn-primary" onclick="finalizarPedido()">
+                            <i class="fas fa-check-circle"></i> Finalizar Pedido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- LISTA DE PEDIDOS -->
+                <div class="section-subheader">
+                    <h3><i class="fas fa-list"></i> Todos os Pedidos</h3>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination" id="paginationPedidos">
+                    <button type="button" onclick="mudarPagina('pedidos', -1)">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span class="pagination-info" id="pageInfoPedidos">Página 1 de 1</span>
+                    <button type="button" onclick="mudarPagina('pedidos', 1)">
+                        Próximo <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="listaPedidos" class="list-grid">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando pedidos...
+                    </div>
+                </div>
+            </section>
+
+            <!-- RELATÓRIOS -->
+            <section id="relatorios" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-line"></i> Relatórios</h2>
+                    <div class="header-actions">
+                        <button type="button" onclick="exportarRelatorioExcel()" class="export-btn">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="export-controls">
+                    <button type="button" onclick="gerarRelatorioVendas()" class="btn-primary">
+                        <i class="fas fa-chart-bar"></i> Vendas Diárias
+                    </button>
+                    <button type="button" onclick="gerarRelatorioClientes()" class="btn-primary">
+                        <i class="fas fa-users"></i> Clientes Ativos
+                    </button>
+                    <button type="button" onclick="gerarRelatorioProdutos()" class="btn-primary">
+                        <i class="fas fa-box"></i> Estoque
+                    </button>
+                    <button type="button" onclick="gerarRelatorioVendedores()" class="btn-primary">
+                        <i class="fas fa-user-tie"></i> Desempenho Vendedores
+                    </button>
+                </div>
+
+                <div id="resultadoRelatorios" class="list-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Selecione um relatório para gerar</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LOGS -->
+            <section id="logs" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Logs de Auditoria</h2>
+                    <div class="header-actions">
+                        <button type="button" onclick="exportarLogs()" class="export-btn btn-sm">
+                            <i class="fas fa-file-export"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> Data</label>
+                        <input type="date" id="filterLogData" onchange="filtrarLogs()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-user"></i> Usuário</label>
+                        <select id="filterLogUsuario" onchange="filtrarLogs()">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-bolt"></i> Ação</label>
+                        <select id="filterLogAcao" onchange="filtrarLogs()">
+                            <option value="">Todas</option>
+                            <option value="login">Login</option>
+                            <option value="logout">Logout</option>
+                            <option value="create">Criação</option>
+                            <option value="update">Atualização</option>
+                            <option value="delete">Exclusão</option>
+                            <option value="export">Exportação</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="limparFiltrosLogs()" class="btn-secondary btn-sm">
+                        <i class="fas fa-trash-alt"></i> Limpar Filtros
+                    </button>
+                </div>
+
+                <div class="logs-container">
+                    <div id="listaLogs">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando logs...
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAIS -->
+    <div id="modalEdicao" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitulo"><i class="fas fa-edit"></i> Editar Registro</h3>
+                <button type="button" onclick="fecharModal()" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formEdicao" onsubmit="event.preventDefault(); salvarEdicao();">
+                    <input type="hidden" id="editId">
+                    <input type="hidden" id="editTipo">
+
+                    <div id="editClienteForm" class="edit-form hidden">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nome do Cliente *</label>
+                            <input type="text" id="editClienteNome" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" id="editClienteEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefone</label>
+                            <input type="tel" id="editClienteTelefone">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-circle"></i> Status</label>
+                            <select id="editClienteStatus">
+                                <option value="ATIVO">Ativo</option>
+                                <option value="INATIVO">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="editProdutoForm" class="edit-form hidden">
+                        <div class="form-group">
+                            <label><i class="fas fa-box"></i> Nome do Produto *</label>
+                            <input type="text" id="editProdutoNome" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-dollar-sign"></i> Preço (R$) *</label>
+                            <input type="number" id="editProdutoPreco" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-warehouse"></i> Estoque *</label>
+                            <input type="number" id="editProdutoEstoque" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tags"></i> Categoria</label>
+                            <select id="editProdutoCategoria">
+                                <option value="ELETRONICOS">Eletrônicos</option>
+                                <option value="INFORMATICA">Informática</option>
+                                <option value="ESCRITORIO">Escritório</option>
+                                <option value="MOVEIS">Móveis</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="editVendedorForm" class="edit-form hidden">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-tie"></i> Nome do Vendedor *</label>
+                            <input type="text" id="editVendedorNome" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="editVendedorEmail">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefone</label>
+                            <input type="tel" id="editVendedorTelefone">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-percentage"></i> Comissão (%)</label>
+                            <input type="number" id="editVendedorComissao" step="0.1" min="0" max="20" value="5">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="fecharModal()" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" onclick="salvarEdicao()" class="btn-primary">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirmacao" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirmação</h3>
+                <button type="button" onclick="fecharModalConfirmacao()" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="confirmacaoMensagem">Tem certeza que deseja excluir este registro?</h4>
+                <p id="confirmacaoDetalhes" class="confirmacao-detalhes"></p>
+                <div id="confirmacaoAviso" class="confirmacao-aviso hidden">
+                    <i class="fas fa-exclamation-circle"></i> Este registro possui dependências e não pode ser excluído!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="fecharModalConfirmacao()" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" onclick="confirmarExclusao()" class="btn-danger" id="btnConfirmarExclusao">
+                    <i class="fas fa-trash-alt"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICAÇÕES -->
+    <div id="notificacoes" class="notificacoes-container"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
